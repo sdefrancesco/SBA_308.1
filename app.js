@@ -83,33 +83,53 @@ let calculateLearnerAverage = (submission) => {
 
 }
 
-// filter by learner id 
-let filterByLearnerId = (assignments) => {
+// group submissions by learner_id 
+const groupSubmissionsByLearnerId = Object.values(learnerSubmissions.reduce((accumulator, submission) => {
+  // If the learner_id does not exist in the accumulator, create a new entry for it
+  if (!accumulator[submission.learner_id]) {
+    accumulator[submission.learner_id] = {
+      learner_id: submission.learner_id,
+      assignments: [] 
+    };
+  }
+  
+  // push the each submission into their assignments array
+  accumulator[submission.learner_id].assignments.push({
+    assignment_id: submission.assignment_id,
+    submission: submission.submission  
+  });
+  
+  return accumulator
+}, {}));
 
-}
+console.log(groupSubmissionsByLearnerId)
 
-let getLearnerData = (course, assignments, submissions) => {
-    try {
-        let assignmentsArray
-        if(assignments.course_id == course.id) {
-            // proceed
-            assignmentsArray = assignments.assignments.map((assignment) => {
-                if(typeof assignment.points_possible === 'number') {
-                    let assignmentSubmissions = submissions.filter((submission) => {
-                        
-                    });
-                    
-                } else {
-                    throw new Error("Points Possible is not a number! So we can't get the average.")
-                }
-            })
-            return assignmentsArray
-        }
-        throw new Error("Course ID does not match assignment course ID")
-    } catch (error) {
-        return error
-    }
-}
+// let getLearnerData = (course, assignments, submissions) => {
+//     // validation
+//     try {
+//         let assignmentsArray
+//         if(assignments.course_id == course.id) {
+//             // proceed to next step and check the type of points possible for each assignment that it is a number and not a string
+//             assignmentsArray = assignments.assignments.map((assignment) => {
+//                 if(typeof assignment.points_possible !== 'number') {
+//                     throw new Error("Points Possible is not a number! So we can't get the average.")
+//                 } else {
+//                     // check if each submission, matches with the due date
+//                     return assignment.id
 
-const result = getLearnerData(courseInfo, assignmentGroup, learnerSubmissions);
-console.log(result)
+//                 }
+//             })
+
+//             submissions.forEach
+            
+
+//             return assignmentsArray
+//         }
+//         throw new Error("Course ID does not match assignment course ID")
+//     } catch (error) {
+//         return error
+//     }
+// }
+
+// const result = getLearnerData(courseInfo, assignmentGroup, learnerSubmissions);
+// console.log(result)

@@ -79,8 +79,21 @@ const courseInfo = {
 
 
 // some helper functions
-let calculateLearnerAverage = (submission) => {
+let calculateLearnerAverage = (learner) => {
+  let scores = 0
+  let totalAssignments = learner.assignments.length  
+  
+  learner.assignments.forEach((assignment) => {
+    if (assignment.submission && typeof assignment.submission.score === 'number') {
+      scores += assignment.submission.score
+    }
+  })
 
+  if (totalAssignments === 0) {
+    return 0
+  }
+
+  return scores / totalAssignments
 }
 
 // group submissions by learner_id 
@@ -90,7 +103,7 @@ const groupSubmissionsByLearnerId = Object.values(learnerSubmissions.reduce((acc
     accumulator[submission.learner_id] = {
       learner_id: submission.learner_id,
       assignments: [] 
-    };
+    }
   }
   
   // push the each submission into their assignments array
@@ -100,36 +113,28 @@ const groupSubmissionsByLearnerId = Object.values(learnerSubmissions.reduce((acc
   });
   
   return accumulator
-}, {}));
+}, {}))
 
-console.log(groupSubmissionsByLearnerId)
+// console.log(groupSubmissionsByLearnerId)
 
-// let getLearnerData = (course, assignments, submissions) => {
-//     // validation
-//     try {
-//         let assignmentsArray
-//         if(assignments.course_id == course.id) {
-//             // proceed to next step and check the type of points possible for each assignment that it is a number and not a string
-//             assignmentsArray = assignments.assignments.map((assignment) => {
-//                 if(typeof assignment.points_possible !== 'number') {
-//                     throw new Error("Points Possible is not a number! So we can't get the average.")
-//                 } else {
-//                     // check if each submission, matches with the due date
-//                     return assignment.id
-
-//                 }
-//             })
-
-//             submissions.forEach
+let getLearnerData = (course, assignments, submissions) => {
+    // validation
+    try {
+        let assignmentsArray
+        if(assignments.course_id == course.id) {
+            // proceed to next step and check the type of points possible for each assignment that it is a number and not a string
+            const groupedSubmissions =  groupSubmissionsByLearnerId
             
+            groupedSubmissions.forEach((learner) => {
+              learner.avg = calculateLearnerAverage(learner)
+            })
+            return groupedSubmissions
+        }
+        throw new Error("Course ID does not match assignment course ID")
+    } catch (error) {
+        return error
+    }
+}
 
-//             return assignmentsArray
-//         }
-//         throw new Error("Course ID does not match assignment course ID")
-//     } catch (error) {
-//         return error
-//     }
-// }
-
-// const result = getLearnerData(courseInfo, assignmentGroup, learnerSubmissions);
-// console.log(result)
+const result = getLearnerData(courseInfo, assignmentGroup, learnerSubmissions);
+console.log(result)
